@@ -25,3 +25,33 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
     
+class CategoryData(models.Model):
+    name = models.CharField(max_length=200)
+    no_available = models.IntegerField()
+    address = models.CharField(max_length=200)
+    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    image = models.URLField()
+    cost_per_minute = models.IntegerField(validators=[MinValueValidator(0)])
+    
+    Category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category_data')
+    
+    def __str__(self) -> str:
+        return f"{self.name} - {self.cost_per_minute}"
+    
+class Tansaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+    category_data = models.ForeignKey(CategoryData, on_delete=models.CASCADE, related_name='categoryData')
+    cost = models.IntegerField(default=0)
+    
+    def __str__(self) -> str:
+        return f"{self.user} - {self.category_data}"
+    
+class Parking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category_data = models.ForeignKey(CategoryData, on_delete=models.CASCADE)
+    entry_time = models.DateTimeField(auto_now=True)
+    number_plate = models.ForeignKey(NumberPlate, on_delete=models.CASCADE, related_name='numberPlate')
+    
+    def __str__(self) -> str:
+        return f"{self.user} - {self.category_data}"
